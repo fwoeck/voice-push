@@ -15,22 +15,10 @@ require 'connection_pool'
 
 
 conf       = YAML.load(File.read(File.join("./config/app.yml")))
-
-RedisPool  = {}
-RedisPort  = conf['redisport']
-RedisHost  = conf['redishost']
-RedisDbs   = conf['redisaccess']
-
 RabbitHost = conf['rabbithost']
 RabbitUser = conf['rabbituser']
 RabbitPass = conf['rabbitpass']
 
-
-RedisDbs.each do |db|
-  RedisPool[db] = ConnectionPool.new(size: 5, timeout: 5) {
-    Redis.new(host: RedisHost, port: RedisPort, db: db)
-  }
-end
 
 class SSE < Goliath::API
 
