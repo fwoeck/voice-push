@@ -1,0 +1,66 @@
+GIT
+  remote: git://github.com/postrank-labs/goliath.git
+  revision: f8acf8fc988f0cf5a98057d5cb5bc206b438fb1f
+  specs:
+    goliath (1.0.3)
+      async-rack
+      em-synchrony (>= 1.0.0)
+      em-websocket (= 0.3.8)
+      eventmachine (>= 1.0.0.beta.4)
+      http_parser.rb (= 0.6.0)
+      log4r
+      multi_json
+      rack (>= 1.2.2)
+      rack-contrib
+      rack-respond_to
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    addressable (2.3.6)
+    amq-protocol (1.9.2)
+    async-rack (0.5.1)
+      rack (~> 1.1)
+    bundler-unload (1.0.2)
+    bunny (1.3.0)
+      amq-protocol (>= 1.9.2)
+    colorize (0.7.3)
+    connection_pool (2.0.0)
+    em-synchrony (1.0.3)
+      eventmachine (>= 1.0.0.beta.1)
+    em-websocket (0.3.8)
+      addressable (>= 2.1.1)
+      eventmachine (>= 0.12.9)
+    eventmachine (1.0.3-java)
+    executable-hooks (1.3.2)
+    git-smart (0.1.10)
+      colorize
+    http_parser.rb (0.6.0-java)
+    json (1.8.1-java)
+    log4r (1.1.10)
+    multi_json (1.10.1)
+    rack (1.5.2)
+    rack-accept-media-types (0.9)
+    rack-contrib (1.1.0)
+      rack (>= 0.9.1)
+    rack-respond_to (0.9.8)
+      rack-accept-media-types (>= 0.6)
+    redis (3.1.0)
+    rubygems-bundler (1.4.4)
+      bundler-unload (>= 1.0.2)
+      executable-hooks (>= 1.3.2)
+    thread_safe (0.3.4-java)
+
+PLATFORMS
+  java
+
+DEPENDENCIES
+  bunny
+  connection_pool
+  git-smart
+  goliath!
+  json
+  redis
+  rubygems-bundler
+  rubysl
+  thread_safe
