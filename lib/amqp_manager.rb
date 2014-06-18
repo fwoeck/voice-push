@@ -7,7 +7,7 @@ module AmqpManager
     end
 
     def channel
-      Thread.current[:channel] ||= @connection.create_channel(auto_delete: true)
+      Thread.current[:channel] ||= @connection.create_channel
     end
 
     def xchange
