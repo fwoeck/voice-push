@@ -13,22 +13,27 @@ require 'goliath'
 require 'thread_safe'
 require 'connection_pool'
 
-
-conf       = YAML.load(File.read(File.join("./config/app.yml")))
-RabbitHost = conf['rabbithost']
-RabbitUser = conf['rabbituser']
-RabbitPass = conf['rabbitpass']
+PushConf = YAML.load(File.read(File.join('./config/app.yml')))
+require 'lib/amqp_manager'
 
 
-class SSE < Goliath::API
+class Server < Goliath::API
 
   def response(env)
-    streaming_response(200, {
-      'Connection'   => 'keep-alive',
-      'Content-Type' => 'text/event-stream'
-    })
+    EM.synchrony do
+      AmqpManager.queue.subscribe do |delivery_info, metadata, payload|
+        env.stream_send payload(payload)
+      end
+    end
+
+    streaming_response(200, {'Content-Type' => 'text/event-stream'})
   end
 
   def on_close(env)
+    # AmqpManager.channel.close
+  end
+
+  def payload(message)
+    "id: #{Time.now}\n" + "data: #{message}" + "\r\n\n"
   end
 end
