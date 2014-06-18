@@ -21,8 +21,11 @@ class Server < Goliath::API
 
   def response(env)
     EM.synchrony do
-      AmqpManager.queue.subscribe do |delivery_info, metadata, payload|
-        env.stream_send payload(payload)
+      @queue = AmqpManager.channel.queue(env.object_id.to_s, auto_delete: true)
+
+      @queue.bind(AmqpManager.xchange).subscribe do |info, meta, payload|
+        env.stream_send converted(payload)
+        env.logger.info payload
       end
     end
 
@@ -30,10 +33,10 @@ class Server < Goliath::API
   end
 
   def on_close(env)
-    # AmqpManager.channel.close
+    @queue.delete
   end
 
-  def payload(message)
-    "id: #{Time.now}\n" + "data: #{message}" + "\r\n\n"
+  def converted(payload)
+    "id: #{Time.now}\n" + "data: #{payload}" + "\n\n"
   end
 end

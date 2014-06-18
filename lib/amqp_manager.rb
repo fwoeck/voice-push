@@ -2,24 +2,16 @@ module AmqpManager
 
   class << self
 
+    def shutdown
+      @connection.close
+    end
+
     def channel
       Thread.current[:channel] ||= @connection.create_channel
     end
 
     def xchange
       Thread.current[:xchange] ||= channel.fanout('voice.push', auto_delete: false)
-    end
-
-    def queue
-      Thread.current[:queue] ||= channel.queue('voice.push', auto_delete: false)
-    end
-
-    def push_publish(*args)
-      xchange.publish(*args)
-    end
-
-    def shutdown
-      @connection.close
     end
 
     def establish_connection
@@ -32,7 +24,6 @@ module AmqpManager
 
     def start
       establish_connection
-      queue.bind(xchange, routing_key: 'voice.push')
     end
   end
 end
