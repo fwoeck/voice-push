@@ -1,6 +1,9 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 
+STDOUT.sync = true
+STDERR.sync = true
+
 require 'bundler'
 Bundler.require
 
