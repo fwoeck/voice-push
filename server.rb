@@ -23,8 +23,13 @@ class Server < Goliath::API
 
     @queue.bind(AmqpManager.xchange).subscribe do |info, meta, payload|
       EM.next_tick {
-        env.stream_send "data:#{payload}\n\n"
-        env.logger.info "Send to #{env.object_id}: #{payload}"
+        begin
+          env.stream_send "data:#{payload}\n\n"
+          env.logger.info "Send to #{env.object_id}: #{payload}"
+        rescue
+          on_close(env)
+          env.stream_close
+        end
       }
     end
 
