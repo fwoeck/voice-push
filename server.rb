@@ -21,9 +21,11 @@ class Server < Goliath::API
 
 
   def response(env)
-    setup_queue(env)
-    setup_ping_timer(env)
-    subscribe_to_queue(env)
+    EM.synchrony {
+      setup_queue(env)
+      setup_ping_timer(env)
+      subscribe_to_queue(env)
+    }
 
     streaming_response(200, {'Content-Type' => 'text/event-stream'})
   end

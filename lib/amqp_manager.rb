@@ -28,4 +28,8 @@ module AmqpManager
   end
 end
 
+at_exit do
+  AmqpManager.shutdown
+end
+
 AmqpManager.start
