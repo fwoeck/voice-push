@@ -14,7 +14,7 @@ require 'bunny'
 require 'goliath'
 
 PushConf = YAML.load(File.read(File.join('./config/app.yml')))
-require 'lib/amqp_manager'
+require './lib/amqp_manager'
 
 class Server < Goliath::API
 
