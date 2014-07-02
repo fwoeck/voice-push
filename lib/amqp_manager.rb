@@ -21,7 +21,8 @@ module AmqpManager
       @connection = Bunny.new(
         host:     PushConf['rabbit_host'],
         user:     PushConf['rabbit_user'],
-        password: PushConf['rabbit_pass']
+        password: PushConf['rabbit_pass'],
+        automatic_recovery: false
       ).tap { |c| c.start }
     end
 
@@ -31,10 +32,3 @@ module AmqpManager
     end
   end
 end
-
-
-at_exit do
-  AmqpManager.shutdown
-end
-
-AmqpManager.start

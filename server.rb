@@ -16,9 +16,7 @@ require 'goliath'
 PushConf = YAML.load(File.read(File.join('./config/app.yml')))
 require 'lib/amqp_manager'
 
-
 class Server < Goliath::API
-
 
   def response(env)
     EM.synchrony {
@@ -91,3 +89,18 @@ class Server < Goliath::API
     env.logger.info "Queue #{queue_name(env)} closed."
   end
 end
+
+
+at_exit do
+  puts 'Shutting down..'
+  AmqpManager.shutdown
+  exit!
+end
+
+puts 'Starting up..'
+AmqpManager.start
+
+gr = Goliath::Runner.new(ARGV, nil)
+gr.api = Server.new
+gr.app = Goliath::Rack::Builder.build(Server, gr.api)
+gr.run
