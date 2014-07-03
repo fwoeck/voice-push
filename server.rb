@@ -51,6 +51,10 @@ class Server < Goliath::API
 
 
   def store_env_in_registry(env)
+    if (old_env = EnvRegistry[env[:user_id]])
+      on_close(old_env)
+    end
+
     EnvRegistry[env[:user_id]] = env
     env.logger.info "Queue for #{env[:user_id]} opened."
   end
@@ -63,8 +67,10 @@ class Server < Goliath::API
 
 
   def on_close(env)
-    env[:ping].cancel
-    env.delete :ping
+    if env[:ping]
+      env[:ping].cancel
+      env.delete :ping
+    end
     env.logger.info "Queue for #{env[:user_id]} closed."
   end
 end
