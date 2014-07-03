@@ -16,9 +16,10 @@ class Server < Goliath::API
 
   def user_token_is_valid?(env)
     env[:user_id] = params['user_id'].to_i
-    token         = params['token'] || ""
+    client_token  = params['token'] || ""
+    server_token  = $redis.get(redis_namespaced_key)
 
-    token.length > 0 && token == $redis.get(redis_namespaced_key)
+    client_token.length > 0 && client_token == server_token
   end
 
 
