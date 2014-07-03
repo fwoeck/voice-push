@@ -1,7 +1,10 @@
 source 'http://rubygems.org'
 
 gem 'bunny'
-gem 'goliath', github: 'postrank-labs/goliath'
+gem 'redis'
+gem 'goliath'
+gem 'thread_safe'
+gem 'connection_pool'
 
 platforms :rbx do
   gem 'rubysl'
