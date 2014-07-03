@@ -10,24 +10,40 @@ Bundler.require
 require 'yaml'
 require 'time'
 require 'json'
-require 'bunny'
 require 'goliath'
 
-PushConf = YAML.load(File.read(File.join('./config/app.yml')))
+WimConfig = YAML.load(File.read(File.join('./config/app.yml')))
+require './lib/redis_connection'
 require './lib/amqp_manager'
 
+
 class Server < Goliath::API
+  use Goliath::Rack::Params
 
   def response(env)
-    EM.synchrony {
-      setup_queue(env)
-      setup_ping_timer(env)
-      subscribe_to_queue(env)
-    }
-
-    streaming_response(200, {'Content-Type' => 'text/event-stream'})
+    if user_token_is_valid?
+      EM.synchrony {
+        setup_queue(env)
+        setup_ping_timer(env)
+        subscribe_to_queue(env)
+      }
+      streaming_response(200, {'Content-Type' => 'text/event-stream'})
+    else
+      return [400, {}, []]
+    end
   rescue Timeout::Error => e
     puts ">>> Request #{queue_name(env)} timed out: #{e.message}"
+  end
+
+
+  def user_token_is_valid?
+    (params['token'] || '').length > 0 &&
+      $redis.get(redis_namespaced_key) == params['token']
+  end
+
+
+  def redis_namespaced_key
+    "#{params['rails_env']}.token.#{params['user_id']}"
   end
 
 
