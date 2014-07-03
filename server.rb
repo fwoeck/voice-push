@@ -12,7 +12,7 @@ require 'time'
 require 'json'
 require 'goliath'
 
-WimConfig = YAML.load(File.read(File.join('./config/app.yml')))
+WimConfig = YAML.load File.read(File.join './config/app.yml')
 require './lib/redis_connection'
 require './lib/amqp_manager'
 
@@ -37,8 +37,8 @@ class Server < Goliath::API
 
 
   def user_token_is_valid?
-    (params['token'] || '').length > 0 &&
-      $redis.get(redis_namespaced_key) == params['token']
+    token = params['token'] || ""
+    token.length > 0 && token == $redis.get(redis_namespaced_key)
   end
 
 
