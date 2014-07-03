@@ -19,7 +19,14 @@ class Server < Goliath::API
     client_token  = params['token'] || ""
     server_token  = $redis.get(redis_namespaced_key)
 
-    client_token.length > 0 && client_token == server_token
+    token_is_valid?(env, client_token, server_token)
+  end
+
+
+  def token_is_valid?(env, client_token, server_token)
+    env[:user_id] > 0 &&
+      client_token.length > 0 &&
+      client_token == server_token
   end
 
 
