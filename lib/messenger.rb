@@ -13,7 +13,7 @@ module Messenger
 
     def send_ping(env)
       ts   = (Time.now.utc.to_f * 1000).to_i
-      data = {timestamp: ts}.to_json
+      data = {servertime: ts}.to_json
       send_chunk_to(env, data)
     end
 
