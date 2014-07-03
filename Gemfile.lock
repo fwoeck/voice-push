@@ -248,6 +248,8 @@ GEM
     rubysl-xmlrpc (2.0.0)
     rubysl-yaml (2.0.4)
     rubysl-zlib (2.0.1)
+    thread_safe (0.3.4)
+    thread_safe (0.3.4-java)
 
 PLATFORMS
   java
@@ -261,3 +263,4 @@ DEPENDENCIES
   redis
   rubygems-bundler
   rubysl
+  thread_safe

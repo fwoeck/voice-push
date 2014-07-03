@@ -3,6 +3,7 @@ source 'http://rubygems.org'
 gem 'bunny'
 gem 'redis'
 gem 'goliath'
+gem 'thread_safe'
 gem 'connection_pool'
 
 platforms :rbx do

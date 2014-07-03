@@ -14,7 +14,12 @@ module AmqpManager
 
 
     def push_xchange
-      Thread.current[:push_xchange] ||= push_channel.fanout('voice.push', auto_delete: false)
+      Thread.current[:push_xchange] ||= push_channel.topic('voice.push', auto_delete: false)
+    end
+
+
+    def push_queue
+      Thread.current[:push_queue] ||= push_channel.queue('voice.push', auto_delete: false)
     end
 
 
@@ -30,6 +35,11 @@ module AmqpManager
 
     def start
       establish_connection
+      push_queue.bind(push_xchange, routing_key: 'voice.push')
+
+      push_queue.subscribe do |delivery_info, metadata, payload|
+        Messenger.send_chunk_to_client(payload)
+      end
     end
   end
 end
