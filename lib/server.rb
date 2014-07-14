@@ -56,6 +56,7 @@ class Server < Goliath::API
       env[:ping].cancel
       env.delete :ping
     end
+    EnvRegistry.delete env[:user_id]
     env.logger.info "Queue for #{env[:user_id]} closed."
   end
 end
