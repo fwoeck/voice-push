@@ -60,6 +60,6 @@ class Server < Goliath::API
     uid = env[:user_id]
     EnvRegistry.delete uid
     AmqpManager.ahn_publish(user_id: uid, visibility: 'offline')
-    env.logger.info "Queue for #{nv[:user_id]} closed."
+    env.logger.info "Queue for #{env[:user_id]} closed."
   end
 end
