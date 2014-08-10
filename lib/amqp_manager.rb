@@ -63,7 +63,7 @@ module AmqpManager
       push_queue.bind(push_xchange, routing_key: 'voice.push')
 
       push_queue.subscribe do |delivery_info, metadata, payload|
-        Messenger.send_chunk_to_client(payload)
+        Messenger.send_chunk_to_clients(payload)
       end
     end
   end
