@@ -1,7 +1,7 @@
 module Messenger
   class << self
 
-    def send_chunk_to_client(payload)
+    def send_chunk_to_clients(payload)
       hash  = JSON.parse payload
       users = hash['user_ids'].map(&:to_i)
       data  = hash['data'].to_json
