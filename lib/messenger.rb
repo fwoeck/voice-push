@@ -2,12 +2,14 @@ module Messenger
   class << self
 
     def send_chunk_to_client(payload)
-      hash    = JSON.parse payload
-      user_id = hash['user_id'].to_i
-      data    = hash['data'].to_json
-      env     = EnvRegistry[user_id]
+      hash  = JSON.parse payload
+      users = hash['user_ids'].map(&:to_i)
+      data  = hash['data'].to_json
 
-      EM.next_tick { send_chunk_to(env, data) } if env
+      users.each { |uid|
+        env = EnvRegistry[uid]
+        EM.next_tick { send_chunk_to(env, data) } if env
+      }
     end
 
 
