@@ -4,13 +4,21 @@ class Server < Goliath::API
   def response(env)
     if user_token_is_valid?(env)
       EM.synchrony {
+        clear_old(env)
         store_env_in_registry(env)
         setup_ping_timer(env)
       }
       streaming_response(200, {'Content-Type' => 'text/event-stream'})
     else
+      env[:skip_cleanup] = true
       return [400, {}, []]
     end
+  end
+
+
+  def clear_old(env)
+    old_env = EnvRegistry[env[:user_id]]
+    old_env.stream_close if old_env
   end
 
 
@@ -37,8 +45,6 @@ class Server < Goliath::API
 
   def store_env_in_registry(env)
     uid = env[:user_id]
-    on_close(old_env) if (old_env = EnvRegistry[uid])
-
     EnvRegistry[uid] = env
     AmqpManager.ahn_publish(user_id: uid, visibility: 'online')
     env.logger.info "Queue for #{uid} opened."
@@ -51,15 +57,27 @@ class Server < Goliath::API
   end
 
 
-  def on_close(env)
+  def clear_ping_timer(env)
     if env[:ping]
-      env[:ping].cancel
+      EM.cancel_timer env[:ping]
       env.delete :ping
     end
+  end
 
+
+  def remove_connection(env)
     uid = env[:user_id]
     EnvRegistry.delete uid
+
     AmqpManager.ahn_publish(user_id: uid, visibility: 'offline')
-    env.logger.info "Queue for #{env[:user_id]} closed."
+    env.logger.info "Queue for #{uid} closed."
+  end
+
+
+  def on_close(env)
+    return if env[:skip_cleanup]
+
+    clear_ping_timer(env)
+    remove_connection(env)
   end
 end
