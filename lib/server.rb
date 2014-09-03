@@ -46,7 +46,10 @@ class Server < Goliath::API
   def store_env_in_registry(env)
     uid = env[:user_id]
     EnvRegistry[uid] = env
-    AmqpManager.ahn_publish(user_id: uid, visibility: 'online')
+
+    EM.next_tick {
+      AmqpManager.ahn_publish(user_id: uid, visibility: 'online')
+    }
     env.logger.info "Queue for #{uid} opened."
   end
 
@@ -69,7 +72,9 @@ class Server < Goliath::API
     uid = env[:user_id]
     EnvRegistry.delete uid
 
-    AmqpManager.ahn_publish(user_id: uid, visibility: 'offline')
+    EM.next_tick {
+      AmqpManager.ahn_publish(user_id: uid, visibility: 'offline')
+    }
     env.logger.info "Queue for #{uid} closed."
   end
 
