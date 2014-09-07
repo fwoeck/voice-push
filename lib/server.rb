@@ -25,7 +25,7 @@ class Server < Goliath::API
   def user_token_is_valid?(env)
     env[:user_id] = params['user_id'].to_i
     client_token  = params['token'] || ""
-    server_token  = $redis.get(redis_namespaced_key)
+    server_token  = Redis.current.get(redis_namespaced_key)
 
     token_is_valid?(env, client_token, server_token)
   end
