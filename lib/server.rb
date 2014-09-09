@@ -50,7 +50,7 @@ class Server < Goliath::API
     EM.next_tick {
       AmqpManager.ahn_publish(user_id: uid, visibility: :online)
     }
-    env.logger.info "Queue for #{uid} opened."
+    env.logger.info "Queue for userId #{uid} opened."
   end
 
 
@@ -75,7 +75,7 @@ class Server < Goliath::API
     EM.next_tick {
       AmqpManager.ahn_publish(user_id: uid, visibility: :offline)
     }
-    env.logger.info "Queue for #{uid} closed."
+    env.logger.info "Queue for userId #{uid} closed."
   end
 
 
