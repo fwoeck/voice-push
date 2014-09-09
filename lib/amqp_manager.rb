@@ -17,7 +17,7 @@ module AmqpManager
     end
 
     def ahn_publish(payload)
-      ahn_xchange.publish(payload.to_json, routing_key: 'voice.ahn')
+      ahn_xchange.publish(Marshal.dump(payload), routing_key: 'voice.ahn')
       true
     end
 
@@ -63,7 +63,8 @@ module AmqpManager
       push_queue.bind(push_xchange, routing_key: 'voice.push')
 
       push_queue.subscribe do |delivery_info, metadata, payload|
-        Messenger.send_chunk_to_clients(payload)
+        hash = Marshal.load(payload)
+        Messenger.send_chunk_to_clients(hash)
       end
     end
   end
