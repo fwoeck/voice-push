@@ -63,7 +63,7 @@ module AmqpManager
       push_queue.bind(push_xchange, routing_key: 'voice.push')
 
       push_queue.subscribe do |delivery_info, metadata, payload|
-        hash = Marshal.load(payload)
+        hash = MultiJson.load(payload, symbolize_keys: true)
         Messenger.send_chunk_to_clients(hash)
       end
     end
