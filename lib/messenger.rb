@@ -21,7 +21,7 @@ module Messenger
 
     def send_chunk_to(env, payload)
       env.stream_send  "data:#{payload}\n\n"
-      env.logger.debug "Send to #{env[:user_id]}: #{payload}"
+      env.logger.debug "Send to userId #{env[:user_id]}: #{payload}"
     rescue
       env.logger.warn 'Sending data to closed socket failed.'
     end
