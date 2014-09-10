@@ -3,10 +3,11 @@ module Messenger
 
     def send_chunk_to_clients(hash)
       users = hash[:user_ids].map(&:to_i)
+      data  = MultiJson.dump(hash[:data])
 
       users.each { |uid|
         env = EnvRegistry[uid]
-        EM.next_tick { send_chunk_to(env, hash[:data]) } if env
+        EM.next_tick { send_chunk_to(env, data) } if env
       }
     end
 
