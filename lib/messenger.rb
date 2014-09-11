@@ -15,13 +15,13 @@ module Messenger
     def send_ping(env)
       ts   = (Time.now.utc.to_f * 1000).to_i
       data = {servertime: ts}.to_json
-      send_chunk_to(env, data)
+      send_chunk_to(env, data, :ping)
     end
 
 
-    def send_chunk_to(env, payload)
+    def send_chunk_to(env, payload, type=:data)
       env.stream_send  "data:#{payload}\n\n"
-      env.logger.debug "Send data to userId #{env[:user_id]}."
+      env.logger.debug "Sent #{type} to user ##{env[:user_id]}."
     rescue
       env.logger.warn 'Sending data to closed socket failed.'
     end
