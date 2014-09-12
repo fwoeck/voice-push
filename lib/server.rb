@@ -44,11 +44,12 @@ class Server < Goliath::API
 
 
   def store_env_in_registry(env)
-    uid = env[:user_id]
+    uid   = env[:user_id]
+    agent = Agent.new.tap { |a| a.id = uid; a.visibility = :online }
     EnvRegistry[uid] = env
 
     EM.next_tick {
-      AmqpManager.ahn_publish(user_id: uid, visibility: :online)
+      AmqpManager.ahn_publish(agent)
     }
     env.logger.info "Queue for user ##{uid} opened."
   end
@@ -69,11 +70,12 @@ class Server < Goliath::API
 
 
   def remove_connection(env)
-    uid = env[:user_id]
+    uid   = env[:user_id]
+    agent = Agent.new.tap { |a| a.id = uid; a.visibility = :offline }
     EnvRegistry.delete uid
 
     EM.next_tick {
-      AmqpManager.ahn_publish(user_id: uid, visibility: :offline)
+      AmqpManager.ahn_publish(agent)
     }
     env.logger.info "Queue for user ##{uid} closed."
   end

@@ -20,6 +20,7 @@ require './lib/redis_connection'
 require './lib/amqp_manager'
 require './lib/messenger'
 require './lib/server'
+require './lib/agent'
 
 at_exit do
   puts 'Shutting down..'
