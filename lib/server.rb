@@ -1,6 +1,7 @@
 class Server < Goliath::API
   use Goliath::Rack::Params
 
+
   def response(env)
     if user_token_is_valid?(env)
       EM.synchrony {
@@ -8,6 +9,7 @@ class Server < Goliath::API
         store_env_in_registry(env)
         setup_ping_timer(env)
       }
+
       streaming_response(200, {'Content-Type' => 'text/event-stream'})
     else
       env[:skip_cleanup] = true
@@ -44,14 +46,9 @@ class Server < Goliath::API
 
 
   def store_env_in_registry(env)
-    uid   = env[:user_id]
-    agent = Agent.new.tap { |a| a.id = uid; a.visibility = :online }
+    uid = env[:user_id]
     EnvRegistry[uid] = env
-
-    EM.next_tick {
-      AmqpManager.ahn_publish(agent)
-    }
-    env.logger.info "Queue for user ##{uid} opened."
+    set_agent_visibility(env, uid, :online)
   end
 
 
@@ -70,14 +67,9 @@ class Server < Goliath::API
 
 
   def remove_connection(env)
-    uid   = env[:user_id]
-    agent = Agent.new.tap { |a| a.id = uid; a.visibility = :offline }
+    uid = env[:user_id]
     EnvRegistry.delete uid
-
-    EM.next_tick {
-      AmqpManager.ahn_publish(agent)
-    }
-    env.logger.info "Queue for user ##{uid} closed."
+    set_agent_visibility(env, uid, :offline)
   end
 
 
@@ -86,5 +78,12 @@ class Server < Goliath::API
 
     clear_ping_timer(env)
     remove_connection(env)
+  end
+
+
+  def set_agent_visibility(env, uid, state)
+    agent = Agent.new.tap { |a| a.id = uid; a.visibility = state }
+    EM.defer { AmqpManager.ahn_publish(agent) }
+    env.logger.info "Client for user ##{uid} went #{state}."
   end
 end

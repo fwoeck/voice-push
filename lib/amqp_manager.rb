@@ -1,8 +1,5 @@
-require 'bunny'
-
 module AmqpManager
   class << self
-
 
     def ahn_channel
       Thread.current[:ahn_channel] ||= connection.create_channel

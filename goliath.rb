@@ -10,8 +10,11 @@ Bundler.require
 require 'yaml'
 require 'time'
 require 'json'
+require 'bunny'
+require 'redis'
 require 'goliath'
 require 'thread_safe'
+require 'connection_pool'
 
 EnvRegistry = ThreadSafe::Cache.new
 WimConfig   = YAML.load File.read(File.join './config/app.yml')
@@ -25,7 +28,6 @@ require './lib/agent'
 at_exit do
   puts 'Shutting down..'
   AmqpManager.shutdown
-  exit!
 end
 
 puts 'Starting up..'
