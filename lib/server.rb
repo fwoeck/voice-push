@@ -48,7 +48,7 @@ class Server < Goliath::API
   def store_env_in_registry(env)
     uid = env[:user_id]
     EnvRegistry[uid] = env
-    set_agent_visibility(env, uid, :online)
+    Agent.set_agent_visibility(uid, :online, env)
   end
 
 
@@ -69,7 +69,7 @@ class Server < Goliath::API
   def remove_connection(env)
     uid = env[:user_id]
     EnvRegistry.delete uid
-    set_agent_visibility(env, uid, :offline)
+    Agent.set_agent_visibility(uid, :offline, env)
   end
 
 
@@ -81,9 +81,12 @@ class Server < Goliath::API
   end
 
 
-  def set_agent_visibility(env, uid, state)
-    agent = Agent.new.tap { |a| a.id = uid; a.visibility = state }
-    EM.defer { AmqpManager.ahn_publish(agent) }
-    env.logger.info "Client for user ##{uid} went #{state}."
+  def self.shutdown
+    @@shutdown
+  end
+
+
+  def self.shutdown=(other)
+    @@shutdown = other
   end
 end
