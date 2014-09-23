@@ -27,10 +27,13 @@ require './lib/agent'
 
 at_exit do
   puts 'Shutting down..'
+  Server.shutdown = true
   AmqpManager.shutdown
 end
 
 puts 'Starting up..'
+Server.shutdown = false
+Agent.set_agents_offline
 AmqpManager.start
 
 gr     = Goliath::Runner.new(ARGV, nil)
