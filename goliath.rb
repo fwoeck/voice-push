@@ -29,6 +29,7 @@ at_exit do
   puts 'Shutting down..'
   Server.shutdown = true
   AmqpManager.shutdown
+  exit!
 end
 
 puts 'Starting up..'
