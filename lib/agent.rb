@@ -24,7 +24,9 @@ class Agent
 
 
   def self.orphaned_agents
-    Redis.current.smembers(online_keyname).map(&:to_i) - EnvRegistry.keys
+    RPool.with { |con|
+      con.smembers(online_keyname)
+    }.map(&:to_i) - EnvRegistry.keys
   end
 
 
