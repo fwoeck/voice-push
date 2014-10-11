@@ -34,6 +34,7 @@ module AmqpManager
 
     def shutdown
       connection.close
+    rescue Bunny::UnexpectedFrame
     end
 
     def connection
