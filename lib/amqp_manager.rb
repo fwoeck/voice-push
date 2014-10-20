@@ -1,69 +1,90 @@
-module AmqpManager
+class AmqpManager
+  include Celluloid
+
+  TOPICS = [:ahn, :push]
+
+
+  TOPICS.each { |name|
+    class_eval %Q"
+      def #{name}_channel
+        @#{name}_channel ||= connection.create_channel
+      end
+    "
+
+    class_eval %Q"
+      def #{name}_xchange
+        @#{name}_xchange ||= #{name}_channel.topic('voice.#{name}', auto_delete: false)
+      end
+    "
+
+    class_eval %Q"
+      def #{name}_queue
+        @#{name}_queue ||= #{name}_channel.queue('voice.#{name}', auto_delete: false)
+      end
+    "
+  }
+
+
+  def ahn_publish(payload)
+    data = Marshal.dump(payload)
+    ahn_xchange.publish(data, routing_key: 'voice.ahn')
+  end
+
+
+  def connection
+    establish_connection unless @@connection
+    @@connection
+  end
+
+
+  def shutdown
+    connection.close
+  end
+
+
+  def establish_connection
+    @@connection = Bunny.new(
+      host:     PushConfig['rabbit_host'],
+      user:     PushConfig['rabbit_user'],
+      password: PushConfig['rabbit_pass']
+    ).tap { |c| c.start }
+  rescue Bunny::TCPConnectionFailed
+    sleep 1
+    retry
+  end
+
+
+  def start
+    establish_connection
+    push_queue.bind(push_xchange, routing_key: 'voice.push')
+
+    push_queue.subscribe do |delivery_info, metadata, payload|
+      hash = MultiJson.load(payload, symbolize_keys: true)
+      Messenger.send_chunk_to_clients(hash)
+    end
+  end
+
+
   class << self
 
-    def ahn_channel
-      Thread.current[:ahn_channel] ||= connection.create_channel
-    end
+    def start
+      # TODO This will suppress warnings at exit, but could also
+      #       mask potential problems. Try to remove after a while:
+      #
+      Celluloid.logger = nil
 
-    def ahn_xchange
-      Thread.current[:ahn_xchange] ||= ahn_channel.topic('voice.ahn', auto_delete: false)
-    end
-
-    def ahn_queue
-      Thread.current[:ahn_queue] ||= ahn_channel.queue('voice.ahn', auto_delete: false)
-    end
-
-    def ahn_publish(payload)
-      ahn_xchange.publish(Marshal.dump(payload), routing_key: 'voice.ahn')
-      true
-    end
-
-
-    def push_channel
-      Thread.current[:push_channel] ||= connection.create_channel
-    end
-
-    def push_xchange
-      Thread.current[:push_xchange] ||= push_channel.topic('voice.push', auto_delete: false)
-    end
-
-    def push_queue
-      Thread.current[:push_queue] ||= push_channel.queue('voice.push', auto_delete: false)
+      Celluloid::Actor[:amqp] = AmqpManager.pool
+      @@manager ||= new.tap { |m| m.start }
     end
 
 
     def shutdown
-      connection.close
-    rescue Bunny::UnexpectedFrame
-    end
-
-    def connection
-      establish_connection unless @connection
-      @connection
+      @@manager.shutdown
     end
 
 
-    def establish_connection
-      @connection = Bunny.new(
-        host:     WimConfig['rabbit_host'],
-        user:     WimConfig['rabbit_user'],
-        password: WimConfig['rabbit_pass'],
-        automatic_recovery: false
-      ).tap { |c| c.start }
-    rescue Bunny::TCPConnectionFailed
-      sleep 1
-      retry
-    end
-
-
-    def start
-      establish_connection
-      push_queue.bind(push_xchange, routing_key: 'voice.push')
-
-      push_queue.subscribe do |delivery_info, metadata, payload|
-        hash = MultiJson.load(payload, symbolize_keys: true)
-        Messenger.send_chunk_to_clients(hash)
-      end
+    def ahn_publish(*args)
+      Celluloid::Actor[:amqp].async.ahn_publish(*args)
     end
   end
 end

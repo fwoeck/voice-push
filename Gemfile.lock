@@ -8,6 +8,8 @@ GEM
     bundler-unload (1.0.2)
     bunny (1.5.0)
       amq-protocol (>= 1.9.2)
+    celluloid (0.16.0)
+      timers (~> 4.0.0)
     colorize (0.7.3)
     connection_pool (2.0.0)
     em-synchrony (1.0.3)
@@ -32,6 +34,8 @@ GEM
       rack (>= 1.2.2)
       rack-contrib
       rack-respond_to
+    hitimes (1.2.2)
+    hitimes (1.2.2-java)
     http_parser.rb (0.6.0)
     http_parser.rb (0.6.0-java)
     jrjackson (0.2.7)
@@ -252,6 +256,8 @@ GEM
     rubysl-zlib (2.0.1)
     thread_safe (0.3.4)
     thread_safe (0.3.4-java)
+    timers (4.0.1)
+      hitimes
 
 PLATFORMS
   java
@@ -259,6 +265,7 @@ PLATFORMS
 
 DEPENDENCIES
   bunny
+  celluloid
   connection_pool
   git-smart
   goliath
