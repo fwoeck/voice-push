@@ -17,7 +17,7 @@ require 'thread_safe'
 require 'connection_pool'
 
 EnvRegistry = ThreadSafe::Cache.new
-WimConfig   = YAML.load File.read(File.join './config/app.yml')
+PushConfig  = YAML.load File.read(File.join './config/app.yml')
 
 require './lib/redis_connection'
 require './lib/amqp_manager'
