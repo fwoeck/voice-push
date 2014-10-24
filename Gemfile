@@ -8,10 +8,6 @@ gem 'multi_json'
 gem 'thread_safe'
 gem 'connection_pool'
 
-platforms :rbx do
-  gem 'rubysl'
-end
-
 platforms :ruby do
   gem 'oj'
 end
