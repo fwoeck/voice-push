@@ -28,6 +28,8 @@ class AmqpManager
   def ahn_publish(payload)
     data = Marshal.dump(payload)
     ahn_xchange.publish(data, routing_key: 'voice.ahn')
+  rescue Bunny::ConnectionClosedError
+    # This happens during shutdowns.
   end
 
 
