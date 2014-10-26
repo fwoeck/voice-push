@@ -68,7 +68,6 @@ class AmqpManager
   class << self
 
     def start
-    # Celluloid.logger = nil
       Celluloid::Actor[:amqp] = AmqpManager.pool(size: 32)
       @@manager ||= new.tap { |m| m.start }
     end
@@ -80,6 +79,7 @@ class AmqpManager
 
 
     def ahn_publish(*args)
+      return if Server.shutdown
       Celluloid::Actor[:amqp].async.ahn_publish(*args)
     end
   end
