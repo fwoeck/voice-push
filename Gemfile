@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'bunny'
+gem 'bunny', '1.5.1'    # FIXME 1.6.0 hangs with jruby
 gem 'redis'
 gem 'goliath'
 gem 'celluloid'
