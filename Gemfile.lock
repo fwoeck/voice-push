@@ -40,7 +40,7 @@ GEM
     jrjackson (0.2.7)
     log4r (1.1.10)
     multi_json (1.10.1)
-    oj (2.10.4)
+    oj (2.11.0)
     rack (1.5.2)
     rack-accept-media-types (0.9)
     rack-contrib (1.2.0)
