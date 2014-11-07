@@ -10,11 +10,6 @@ Bundler.require
 require 'yaml'
 require 'time'
 require 'json'
-require 'bunny'
-require 'redis'
-require 'goliath'
-require 'thread_safe'
-require 'connection_pool'
 
 EnvRegistry = ThreadSafe::Cache.new
 PushConfig  = YAML.load File.read(File.join './config/app.yml')
