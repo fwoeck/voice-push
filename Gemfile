@@ -1,6 +1,5 @@
 source 'http://rubygems.org'
 
-gem 'bunny', '1.5.1'    # FIXME 1.6.0 hangs with jruby
 gem 'redis'
 gem 'goliath'
 gem 'celluloid'
@@ -10,8 +9,10 @@ gem 'connection_pool'
 
 platforms :ruby do
   gem 'oj'
+  gem 'bunny'
 end
 
 platforms :jruby do
   gem 'jrjackson'
+  gem 'march_hare'
 end

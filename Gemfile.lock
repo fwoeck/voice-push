@@ -5,7 +5,7 @@ GEM
     amq-protocol (1.9.2)
     async-rack (0.5.1)
       rack (~> 1.1)
-    bunny (1.5.1)
+    bunny (1.6.2)
       amq-protocol (>= 1.9.2)
     celluloid (0.16.0)
       timers (~> 4.0.0)
@@ -34,6 +34,7 @@ GEM
     http_parser.rb (0.6.0-java)
     jrjackson (0.2.7)
     log4r (1.1.10)
+    march_hare (2.7.0-java)
     multi_json (1.10.1)
     oj (2.11.0)
     rack (1.5.2)
@@ -53,11 +54,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bunny (= 1.5.1)
+  bunny
   celluloid
   connection_pool
   goliath
   jrjackson
+  march_hare
   multi_json
   oj
   redis

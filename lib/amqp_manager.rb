@@ -1,7 +1,8 @@
 class AmqpManager
   include Celluloid
 
-  TOPICS = [:ahn, :push]
+  USE_JRB = RUBY_PLATFORM =~ /java/
+  TOPICS  = [:ahn, :push]
 
 
   TOPICS.each { |name|
@@ -28,8 +29,6 @@ class AmqpManager
   def ahn_publish(payload)
     data = Marshal.dump(payload)
     ahn_xchange.publish(data, routing_key: 'voice.ahn')
-  rescue Bunny::ConnectionClosedError
-    # This happens during shutdowns.
   end
 
 
@@ -45,14 +44,31 @@ class AmqpManager
 
 
   def establish_connection
-    @@connection = Bunny.new(
-      host:     PushConfig['rabbit_host'],
-      user:     PushConfig['rabbit_user'],
-      password: PushConfig['rabbit_pass']
-    ).tap { |c| c.start }
+    USE_JRB ? establish_marchhare_connection : establish_bunny_connection
+  end
+
+
+  def establish_marchhare_connection
+    @@connection = MarchHare.connect(amqp_config)
+  rescue MarchHare::ConnectionRefused
+    sleep 1
+    retry
+  end
+
+
+  def establish_bunny_connection
+    @@connection = Bunny.new(amqp_config).tap { |c| c.start }
   rescue Bunny::TCPConnectionFailed
     sleep 1
     retry
+  end
+
+
+  def amqp_config
+    { host:     PushConfig['rabbit_host'],
+      user:     PushConfig['rabbit_user'],
+      password: PushConfig['rabbit_pass']
+    }
   end
 
 
@@ -60,8 +76,8 @@ class AmqpManager
     establish_connection
     push_queue.bind(push_xchange, routing_key: 'voice.push')
 
-    push_queue.subscribe do |delivery_info, metadata, payload|
-      hash = MultiJson.load(payload, symbolize_keys: true)
+    push_queue.subscribe(blocking: false) do |*args|
+      hash = MultiJson.load(USE_JRB ? args[0] : args[2], symbolize_keys: true)
       Messenger.send_chunk_to_clients(hash)
     end
   end
@@ -77,6 +93,7 @@ class AmqpManager
 
     def shutdown
       @@manager.shutdown
+      Celluloid.shutdown
     end
 
 
