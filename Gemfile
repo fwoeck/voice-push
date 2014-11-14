@@ -16,3 +16,8 @@ platforms :jruby do
   gem 'jrjackson'
   gem 'march_hare'
 end
+
+group :development do
+  gem 'rspec'
+  gem 'guard-rspec'
+end
