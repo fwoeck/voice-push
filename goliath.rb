@@ -9,7 +9,6 @@ Bundler.require
 
 require 'yaml'
 require 'time'
-require 'json'
 
 EnvRegistry = ThreadSafe::Cache.new
 PushConfig  = YAML.load File.read(File.join './config/app.yml')

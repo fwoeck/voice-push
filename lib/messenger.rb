@@ -14,7 +14,7 @@ module Messenger
 
     def send_ping(env)
       ts   = (Time.now.utc.to_f * 1000).to_i
-      data = {servertime: ts}.to_json
+      data = MultiJson.dump(servertime: ts)
       send_chunk_to(env, data, :ping)
     end
 
