@@ -27,6 +27,8 @@ class AmqpManager
 
 
   def ahn_publish(payload)
+    return if Server.shutdown
+
     data = Marshal.dump(payload)
     ahn_xchange.publish(data, routing_key: 'voice.ahn')
   end
