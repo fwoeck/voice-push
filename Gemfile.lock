@@ -47,7 +47,7 @@ GEM
     http_parser.rb (0.6.0)
     http_parser.rb (0.6.0-java)
     jrjackson (0.2.7)
-    listen (2.8.0)
+    listen (2.8.1)
       celluloid (>= 0.15.2)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
