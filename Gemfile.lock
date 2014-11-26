@@ -33,7 +33,7 @@ GEM
       rack (>= 1.2.2)
       rack-contrib
       rack-respond_to
-    guard (2.8.2)
+    guard (2.9.0)
       formatador (>= 0.2.4)
       listen (~> 2.7)
       lumberjack (~> 1.0)
@@ -47,7 +47,7 @@ GEM
     http_parser.rb (0.6.0)
     http_parser.rb (0.6.0-java)
     jrjackson (0.2.7)
-    listen (2.8.0)
+    listen (2.8.2)
       celluloid (>= 0.15.2)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
