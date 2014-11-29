@@ -33,7 +33,7 @@ GEM
       rack (>= 1.2.2)
       rack-contrib
       rack-respond_to
-    guard (2.9.0)
+    guard (2.9.2)
       formatador (>= 0.2.4)
       listen (~> 2.7)
       lumberjack (~> 1.0)
